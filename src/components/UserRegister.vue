@@ -9,7 +9,7 @@
         <v-row justify="center">
           <!-- Grid系統的列元件，呈現註冊表單部分 -->
           <v-col cols="6" class="register-form">
-            <h2>註冊帳號</h2>
+            <h2>創建帳號</h2>
             <!-- 註冊標題 -->
             <h3>通過加入會員或者社群，可以獲得更多功能和特權！！</h3>
             <!-- 註冊說明訊息 -->
@@ -17,7 +17,7 @@
             <v-form>
               <!-- 使用者名稱輸入框 -->
               <v-text-field
-                v-model="username"
+                v-model="userName"
                 label="Username"
                 outlined
               ></v-text-field>
@@ -41,14 +41,22 @@
                 type="password"
                 outlined
               ></v-text-field>
+              <!-- 返回登入頁面 -->
+              <p class="forgot-password text-right">
+                已經註冊過了?
+                <router-link to="/login">登入</router-link>
+              </p>
+              <v-form>
+                <p class="error">{{ errorMessage }}</p>
+              </v-form>
               <!-- 註冊按鈕 -->
-              <v-btn block color="purple" dark>註冊</v-btn>
+              <v-btn block color="purple" dark @click="register">創建</v-btn>
             </v-form>
           </v-col>
           <!-- Grid系統的列元件，呈現圖像部分 -->
           <v-col cols="6" class="register-image align-self-start custom-class">
-            <spline-component />
             <!-- SplineComponent元件，用於顯示3D圖像 -->
+            <spline-component />
           </v-col>
         </v-row>
       </v-container>
@@ -59,6 +67,7 @@
 <script>
 // 引入SplineComponent元件
 import SplineComponent from "./SplineComponent.vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -66,14 +75,48 @@ export default {
   },
   data() {
     return {
-      username: "", // 綁定並儲存使用者名稱輸入框的數據
+      userName: "", // 綁定並儲存使用者名稱輸入框的數據
       email: "", // 綁定並儲存電子郵件輸入框的數據
       password: "", // 綁定並儲存密碼輸入框的數據
       confirmPassword: "", // 綁定並儲存確認密碼輸入框的數據
+      responseMessage: "",
     };
   },
   methods: {
-    // 在此添加處理註冊的方法
+    async register() {
+      // 檢查使用者輸入的資訊是否完整;
+      // if (
+      //   this.username === "" ||
+      //   this.email === "" ||
+      //   this.password === "" ||
+      //   this.confirmPassword === ""
+      // ) {
+      //   alert("請填寫所有的欄位！");
+      //   return;
+      // }
+
+      // 檢查兩次輸入的密碼是否一致
+      if (this.password !== this.confirmPassword) {
+        alert("兩次輸入的密碼不一致！");
+        return;
+      }
+
+      // 發送註冊請求
+      try {
+        const response = await axios.post("http://localhost/users", {
+          userName: this.userName,
+          email: this.email,
+          password: this.password,
+        });
+
+        this.responseMessage = response.data.msg;
+
+        console.log("Registered:", response.data.msg + response.data.code);
+      } catch (error) {
+        console.log(error);
+        this.errorMessage = this.errorCodes[error.response.data.code];
+      }
+    },
   },
 };
 </script>
@@ -102,5 +145,9 @@ export default {
 .custom-class {
   height: 500px;
   width: 600px;
+}
+
+.error {
+  color: red;
 }
 </style>

@@ -89,7 +89,7 @@ export default {
           email: this.email,
           password: this.password,
         });
-        console.log("Logged in:", response.data.msg); // 在控制台打印響應數據
+        console.log("Logged in:", response.data.msg + response.data.code); // 在控制台打印響應數據
       } catch (error) {
         // 捕獲並處理錯誤
         this.errorMessage = error.message;
