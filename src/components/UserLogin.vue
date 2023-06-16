@@ -36,12 +36,12 @@
                 color="red"
                 icon="mdi-alert-circle"
                 class="custom-alert"
-                v-if="errorMessage"
+                v-if="loginResponse"
                 dense
                 text
               >
-                {{ errorMessage }}</v-alert
-              >
+                {{ loginResponse }}
+              </v-alert>
               <!-- 登入按鈕，點擊時觸發 login 方法 -->
               <v-btn block color="purple" dark class="my-2" @click="login"
                 >登入</v-btn
@@ -49,9 +49,41 @@
             </v-form>
             <!-- 其他登入選項 -->
             <div class="login-options">
-              <v-btn block color="white" dark class="my-2">Google</v-btn>
-              <v-btn block color="white" dark class="my-2">Facebook</v-btn>
-              <v-btn block color="white" dark class="my-2">Twitter</v-btn>
+              <!-- Google 登入按鈕 -->
+              <v-btn
+                block
+                color="white"
+                dark
+                class="my-2 d-flex justify-center"
+                @click="loginWithGoogle"
+              >
+                <v-icon left>mdi-google</v-icon>
+                以Google帳號登入
+              </v-btn>
+
+              <!-- Facebook 登入按鈕 -->
+              <v-btn
+                block
+                color="white"
+                dark
+                class="my-2 d-flex justify-center"
+                @click="loginWithFacebook"
+              >
+                <v-icon left>mdi-facebook</v-icon>
+                以Facebook帳號登入
+              </v-btn>
+
+              <!-- Twitter 登入按鈕 -->
+              <v-btn
+                block
+                color="white"
+                dark
+                class="my-2 d-flex justify-center"
+                @click="loginWithTwitter"
+              >
+                <v-icon left>mdi-twitter</v-icon>
+                以Twitter帳號登入
+              </v-btn>
             </div>
           </v-col>
           <!-- Grid系統的列元件，呈現圖像部分 -->
@@ -64,6 +96,7 @@
     </v-main>
   </v-app>
 </template>
+
 
 <script>
 // 引入SplineComponent元件和axios庫
@@ -79,8 +112,10 @@ export default {
       email: "", // 綁定並儲存電子郵件輸入框的數據
       password: "", // 綁定並儲存密碼輸入框的數據
       errorMessage: "", // 用於顯示錯誤訊息
+      loginResponse: "", // 新增的用於保存登入響應的數據的變量
     };
   },
+
   methods: {
     async login() {
       try {
@@ -89,9 +124,67 @@ export default {
           email: this.email,
           password: this.password,
         });
-        console.log("Logged in:", response.data.msg + response.data.code); // 在控制台打印響應數據
+        this.loginResponse = response.data.msg; // 把登入響應的數據保存到 loginResponse 變量中
+        // if (response.data.msg == "yes!") {
+        //   this.$router.push("/Aa");
+        // }
+        console.log("Logged in: " + response.data.msg + response.data.code); // 在控制台打印 loginResponse
       } catch (error) {
         // 捕獲並處理錯誤
+        this.errorMessage = error.message;
+      }
+    },
+    //第三方google登入
+    loginWithGoogle() {
+      // eslint-disable-next-line no-undef
+      gapi.load("auth2", () => {
+        // eslint-disable-next-line no-undef
+        const auth2 = gapi.auth2.init({
+          client_id:
+            "699569603913-tatuu7bhl3rntun7m5qt75olhivifnvl.apps.googleusercontent.com",
+        });
+        auth2.signIn().then((googleUser) => {
+          var id_token = googleUser.getAuthResponse().id_token;
+          var data = {
+            credential: id_token,
+          };
+          axios
+            .post("/users/google", data)
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+      });
+    },
+
+    //第三方facebook登入
+    async loginWithFacebook() {
+      try {
+        const response = await axios.get(
+          "http://localhost/users/login/facebook"
+        );
+        console.log(
+          "Logged in with Facebook:",
+          response.data.msg + response.data.code
+        );
+      } catch (error) {
+        this.errorMessage = error.message;
+      }
+    },
+    //第三方twitter登入
+    async loginWithTwitter() {
+      try {
+        const response = await axios.get(
+          "http://localhost/users/login/twitter"
+        );
+        console.log(
+          "Logged in with Twitter:",
+          response.data.msg + response.data.code
+        );
+      } catch (error) {
         this.errorMessage = error.message;
       }
     },
@@ -130,5 +223,9 @@ export default {
 .my-2 {
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.v-btn {
+  text-transform: none;
 }
 </style>

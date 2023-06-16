@@ -46,9 +46,19 @@
                 已經註冊過了?
                 <router-link to="/login">登入</router-link>
               </p>
-              <v-form>
-                <p class="error">{{ errorMessage }}</p>
-              </v-form>
+              <!-- 錯誤信息提示 -->
+              <v-alert
+                type="error"
+                color="red"
+                icon="mdi-alert-circle"
+                class="custom-alert"
+                v-if="RegisteredResponse"
+                dense
+                text
+              >
+                {{ RegisteredResponse }}</v-alert
+              >
+              <br />
               <!-- 註冊按鈕 -->
               <v-btn block color="purple" dark @click="register">創建</v-btn>
             </v-form>
@@ -65,7 +75,7 @@
 </template>
 
 <script>
-// 引入SplineComponent元件
+// 引入SplineComponent元件和axios庫
 import SplineComponent from "./SplineComponent.vue";
 import axios from "axios";
 
@@ -80,6 +90,7 @@ export default {
       password: "", // 綁定並儲存密碼輸入框的數據
       confirmPassword: "", // 綁定並儲存確認密碼輸入框的數據
       responseMessage: "",
+      RegisteredResponse: "", // 新增的用於保存註冊響應的數據的變量
     };
   },
   methods: {
@@ -109,9 +120,8 @@ export default {
           password: this.password,
         });
 
-        this.responseMessage = response.data.msg;
-
-        console.log("Registered:", response.data.msg + response.data.code);
+        this.RegisteredResponse = response.data.msg; // 把註冊響應的數據保存到 RegisteredResponse 變量中
+        console.log("Registered:", response.data.msg + response.data.code); // 在控制台打印 RegisteredResponse
       } catch (error) {
         console.log(error);
         this.errorMessage = this.errorCodes[error.response.data.code];

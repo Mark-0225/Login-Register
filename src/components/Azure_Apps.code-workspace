@@ -1,0 +1,28 @@
+{
+  "folders": [
+	{
+		"path": "../../../Azure_Apps"
+	},
+	{
+		"path": "../../../vue3.0test/my-vue3-test"
+	},
+	{
+		"path": "../../../JavaScriptES6拷貝"
+	},
+	{
+		"path": "../../../vue-3.x-guide-examples-final"
+	},
+	{
+		"path": "../../../vue3.0demo"
+	},
+	{
+		"path": "../.."
+	},
+	{
+		"path": "../../../RESTful_API"
+	}
+],
+  "settings": {
+    "liveServer.settings.multiRootWorkspaceName": "RESTful_API"
+  }
+}

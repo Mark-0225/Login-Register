@@ -7,6 +7,8 @@ import App from './App.vue'
 import Login from './components/UserLogin.vue'
 // eslint-disable-next-line vue/multi-word-component-names
 import Register from './components/UserRegister.vue'
+//第三方登入icon
+import '@mdi/font/css/materialdesignicons.css'
 
 const routes = [
   { path: '/login', component: Login },
